@@ -11,7 +11,6 @@ class Item:
 
     csv_file = Path.joinpath(Path(__file__).parent, 'items.csv')
 
-
     def __init__(self, name: str, price: float, quantity: int) -> None:
         """
         Создание экземпляра класса item.
@@ -25,15 +24,17 @@ class Item:
         self.quantity = quantity
         Item.all.append(self)
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}('{self.name}', {self.price}, {self.quantity})"
+
+    def __str__(self):
+        return f"{self.name}"
+
     @property       # name getter
-
-
     def name(self):
         return self.__name
 
     @name.setter     # name setter
-
-
     def name(self, name):
         try:
             if len(name) > 10:
@@ -42,7 +43,6 @@ class Item:
             self.__name = name
         except ValueError as exception:
             print(f'Exception: {exception}')
-
 
     def calculate_total_price(self) -> float:
         """
@@ -53,17 +53,13 @@ class Item:
         c_t_p = self.price * self.quantity
         return c_t_p
 
-
     def apply_discount(self) -> None:
         """
         Применяет установленную скидку для конкретного товара.
         """
         self.price = self.price * self.pay_rate
 
-
     @classmethod
-
-
     def instantiate_from_csv(cls):
         """
         Класс метод инициализирующий экземпляры класса Item данными
@@ -76,13 +72,9 @@ class Item:
                     cls.string_to_number(row['price']),
                     cls.string_to_number(row['quantity']))
 
-
     @staticmethod
-
-
     def string_to_number(num: str):
         """
         статический метод, возвращающий число из числа строки
         """
         return int(float(num))
-
