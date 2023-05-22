@@ -66,15 +66,27 @@ class Item:
     def instantiate_from_csv(cls):
         """
         Класс метод инициализирующий экземпляры класса Item данными
-        из файла csv_file.      # путь: src items.csv
+        из файла csv_file.      # путь: src/items.csv
         """
-        with open(cls.csv_file, 'r') as csvfile:
-            cls.all.clear()
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                cls(row['name'],
-                    cls.string_to_number(row['price']),
-                    cls.string_to_number(row['quantity']))
+        try:
+            with open(cls.csv_file, 'r') as csvfile:
+                cls.all.clear()
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    name, price, quantity = row.values()
+                    if quantity is None:
+                        raise InstantiateCSVError()
+                    else:
+                        cls(row['name'],
+                            cls.string_to_number(row['price']),
+                            cls.string_to_number(row['quantity']))
+
+        except FileNotFoundError:
+            print("Отсутствует файл item.csv")
+        except InstantiateCSVError:
+            print('Файл item.csv поврежден')
+        except KeyError:
+            print('Файл item.csv имеет ошибку ключа')
 
     @staticmethod
     def string_to_number(num: str):
@@ -82,3 +94,14 @@ class Item:
         статический метод, возвращающий число из числа строки
         """
         return int(float(num))
+
+
+class InstantiateCSVError(Exception):
+    """
+    Класс-исключение повреждение файла
+    """
+    def __init__(self, *args, **kwargs):
+        self.message = args[0] if args else '_Файл item.csv поврежден_'
+
+    def __str__(self):
+        return self.message
